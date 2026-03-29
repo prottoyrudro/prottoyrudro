@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prottoy Datta Rudro | Penetration Tester</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#03080c;--bg2:#060d13;--panel:#081018;
+  --green:#00ff88;--green2:#00cc6a;--cyan:#00d4ff;
+  --red:#ff2d55;--orange:#ff8800;
+  --border:rgba(0,255,136,0.18);--border2:rgba(0,212,255,0.15);
+  --text:#b8cdd8;--muted:#3d5a6a;--white:#e8f4f8;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+::selection{background:var(--green);color:#000;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;overflow-x:hidden;cursor:none;}
+
+#cursor{position:fixed;width:12px;height:12px;border:2px solid var(--green);border-radius:50%;pointer-events:none;z-index:99999;transition:transform .12s,border-color .2s;transform:translate(-50%,-50%);}
+#cursor-dot{position:fixed;width:4px;height:4px;background:var(--green);border-radius:50%;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,136,0.012) 3px,rgba(0,255,136,0.012) 4px);pointer-events:none;z-index:9000;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:5000;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 56px;background:rgba(3,8,12,0.94);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);}
+.nav-logo{font-family:'Orbitron',monospace;font-size:13px;color:var(--white);letter-spacing:4px;text-transform:uppercase;display:flex;align-items:center;gap:8px;}
+.nl-bracket{color:var(--green);}
+.nl-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite;}
+.nav-links{display:flex;gap:34px;list-style:none;}
+.nav-links a{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--muted);text-decoration:none;letter-spacing:2px;text-transform:uppercase;transition:color .2s;position:relative;}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:1px;background:var(--green);transform:scaleX(0);transform-origin:left;transition:transform .25s;}
+.nav-links a:hover{color:var(--green);}
+.nav-links a:hover::after{transform:scaleX(1);}
+.nav-hire{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--green);border:1px solid rgba(0,255,136,.4);padding:7px 18px;display:flex;align-items:center;gap:8px;text-transform:uppercase;}
+.hire-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(0,255,136,.5);}50%{opacity:.7;box-shadow:0 0 0 5px rgba(0,255,136,0);}}
+
+/* HERO */
+#hero{min-height:100vh;display:flex;align-items:center;position:relative;padding:100px 56px 80px;overflow:hidden;}
+.h-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,255,136,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,136,.035) 1px,transparent 1px);background-size:70px 70px;animation:gridDrift 25s linear infinite;}
+@keyframes gridDrift{0%{background-position:0 0;}100%{background-position:70px 70px;}}
+.h-radial{position:absolute;width:900px;height:900px;background:radial-gradient(ellipse,rgba(0,255,136,.055) 0%,transparent 65%);top:50%;left:55%;transform:translate(-50%,-50%);pointer-events:none;animation:breathe 6s ease-in-out infinite;}
+@keyframes breathe{0%,100%{transform:translate(-50%,-50%) scale(1);}50%{transform:translate(-50%,-50%) scale(1.08);}}
+.h-diag{position:absolute;top:0;right:0;width:50%;height:100%;overflow:hidden;pointer-events:none;}
+.h-diag::before{content:'';position:absolute;top:-10%;right:15%;width:2px;height:130%;background:linear-gradient(180deg,transparent,rgba(0,255,136,.18),transparent);transform:rotate(12deg);}
+.h-diag::after{content:'';position:absolute;top:-10%;right:30%;width:1px;height:130%;background:linear-gradient(180deg,transparent,rgba(0,212,255,.12),transparent);transform:rotate(12deg);}
+
+.h-layout{position:relative;z-index:2;display:grid;grid-template-columns:1fr 440px;gap:60px;align-items:center;width:100%;}
+
+.h-badge{display:inline-flex;align-items:center;gap:10px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--cyan);letter-spacing:3px;text-transform:uppercase;border:1px solid var(--border2);padding:7px 18px;margin-bottom:28px;animation:fadeUp .7s ease both;}
+.h-badge-dot{width:6px;height:6px;background:var(--cyan);border-radius:50%;animation:pulse 2s infinite;}
+
+.h-name{font-family:'Orbitron',monospace;font-size:clamp(38px,5.5vw,76px);font-weight:900;line-height:.95;margin-bottom:20px;animation:fadeUp .7s .08s ease both;}
+.h-n1{color:var(--white);display:block;}
+.h-n2{color:transparent;-webkit-text-stroke:2px var(--green);display:block;position:relative;}
+
+.glitch{position:relative;}
+.glitch::before,.glitch::after{content:attr(data-text);position:absolute;top:0;left:0;color:transparent;-webkit-text-stroke:2px var(--green);}
+.glitch::before{color:rgba(0,212,255,.55);-webkit-text-stroke:0;animation:g1 4s infinite;clip-path:polygon(0 0,100% 0,100% 40%,0 40%);}
+.glitch::after{color:rgba(255,45,85,.5);-webkit-text-stroke:0;animation:g2 4s infinite;clip-path:polygon(0 60%,100% 60%,100% 100%,0 100%);}
+@keyframes g1{0%,88%,100%{transform:none;opacity:0;}90%{transform:translateX(-4px);opacity:1;}92%{transform:translateX(4px);opacity:0;}}
+@keyframes g2{0%,86%,100%{transform:none;opacity:0;}88%{transform:translateX(4px);opacity:1;}90%{transform:none;opacity:0;}}
+
+.h-sub{font-family:'Share Tech Mono',monospace;font-size:15px;color:var(--cyan);margin-bottom:28px;animation:fadeUp .7s .16s ease both;display:flex;align-items:center;gap:10px;}
+.h-sub::before{content:'>';color:var(--green);}
+.h-desc{font-size:16px;line-height:1.8;color:var(--text);max-width:520px;margin-bottom:44px;animation:fadeUp .7s .24s ease both;}
+.h-btns{display:flex;gap:14px;flex-wrap:wrap;animation:fadeUp .7s .32s ease both;}
+
+.btn-g{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;padding:13px 30px;background:var(--green);color:#000;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:8px;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%);transition:all .2s;border:none;cursor:pointer;}
+.btn-g:hover{background:#fff;box-shadow:0 0 40px rgba(0,255,136,.4);transform:translateY(-2px);}
+.btn-o{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;padding:13px 30px;background:transparent;color:var(--green);border:1px solid var(--green);text-decoration:none;display:inline-flex;align-items:center;gap:8px;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%);transition:all .2s;cursor:pointer;}
+.btn-o:hover{background:rgba(0,255,136,.08);box-shadow:0 0 24px rgba(0,255,136,.2);transform:translateY(-2px);}
+
+/* TERMINAL */
+.terminal{background:var(--panel);border:1px solid var(--border);position:relative;animation:fadeUp .7s .4s ease both;box-shadow:0 0 60px rgba(0,255,136,.06),0 30px 80px rgba(0,0,0,.5);}
+.terminal::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,255,136,.03),transparent 50%);pointer-events:none;}
+.t-bar{padding:10px 16px;background:#050d14;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px;}
+.td{width:10px;height:10px;border-radius:50%;}
+.td.r{background:#ff5f57;}.td.y{background:#febc2e;}.td.g{background:#28c840;}
+.t-title{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--muted);margin-left:8px;letter-spacing:1px;}
+.t-body{padding:20px 22px;font-family:'Share Tech Mono',monospace;font-size:12.5px;line-height:2;}
+.tl{display:block;}
+.tp{color:var(--green);}.tc{color:var(--cyan);}.to{color:var(--text);padding-left:14px;}.tv{color:var(--green);}.tk{color:var(--orange);}.ts{color:#555;}
+.blink{display:inline-block;width:7px;height:14px;background:var(--green);animation:blink 1s step-start infinite;vertical-align:middle;margin-left:2px;}
+@keyframes blink{50%{opacity:0;}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:translateY(0);}}
+
+/* SECTIONS */
+section{padding:100px 56px;position:relative;}
+.s-tag{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--green);letter-spacing:4px;text-transform:uppercase;display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.s-tag::after{content:'';flex:1;max-width:50px;height:1px;background:var(--green);}
+.s-title{font-family:'Orbitron',monospace;font-size:clamp(26px,3.5vw,44px);font-weight:700;color:var(--white);letter-spacing:-.5px;}
+.s-title em{color:var(--green);font-style:normal;}
+.s-head{margin-bottom:56px;}
+
+/* ABOUT */
+#about{background:var(--bg2);}
+.about-wrap{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:start;}
+.about-text p{font-size:16px;line-height:1.85;color:var(--text);margin-bottom:18px;}
+.about-stats{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.stat{background:var(--panel);border:1px solid var(--border);padding:24px 22px;position:relative;overflow:hidden;transition:border-color .3s,transform .3s;}
+.stat::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--green),var(--cyan));}
+.stat:hover{border-color:rgba(0,255,136,.5);transform:translateY(-3px);}
+.stat-n{font-family:'Orbitron',monospace;font-size:32px;font-weight:900;color:var(--green);line-height:1;margin-bottom:8px;}
+.stat-l{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;}
+
+/* SKILLS */
+#skills{background:var(--bg);}
+.skills-wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.sk{background:var(--panel);border:1px solid var(--border);padding:28px;position:relative;overflow:hidden;transition:all .3s;}
+.sk::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--green),var(--cyan));transform:scaleX(0);transform-origin:left;transition:transform .35s;}
+.sk:hover{border-color:rgba(0,255,136,.45);transform:translateY(-5px);box-shadow:0 20px 50px rgba(0,0,0,.4);}
+.sk:hover::after{transform:scaleX(1);}
+.sk-num{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:14px;}
+.sk-name{font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:var(--green);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;}
+.sk-desc{font-size:14px;color:var(--text);line-height:1.65;margin-bottom:14px;}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.tag{font-family:'Share Tech Mono',monospace;font-size:10px;padding:4px 10px;border:1px solid rgba(0,212,255,.25);color:var(--cyan);letter-spacing:1px;}
+
+/* EXPERIENCE */
+#experience{background:var(--bg2);}
+.exp-wrap{padding-left:0;}
+.exp-item{display:grid;grid-template-columns:220px 1fr;gap:40px;padding:44px 0;border-bottom:1px solid var(--border);position:relative;transition:all .3s;}
+.exp-item:first-child{padding-top:0;}
+.exp-item:last-child{border-bottom:none;}
+.exp-item::before{content:'';position:absolute;left:-24px;top:0;bottom:0;width:2px;background:transparent;transition:background .3s;}
+.exp-item:hover::before{background:linear-gradient(180deg,var(--green),var(--cyan));}
+.exp-co{font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:var(--green);letter-spacing:1px;margin-bottom:6px;text-transform:uppercase;}
+.exp-loc{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:8px;}
+.exp-badge{display:inline-block;font-family:'Share Tech Mono',monospace;font-size:10px;padding:3px 10px;border:1px solid var(--border);color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+.exp-badge.hi{border-color:rgba(0,255,136,.4);color:var(--green);}
+.exp-role{font-family:'Orbitron',monospace;font-size:16px;font-weight:700;color:var(--white);margin-bottom:12px;line-height:1.3;}
+.exp-desc{font-size:15px;color:var(--text);line-height:1.75;margin-bottom:12px;}
+.exp-hl-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+.exp-hl{font-family:'Share Tech Mono',monospace;font-size:10px;padding:4px 12px;background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.2);color:var(--green);letter-spacing:1px;}
+
+/* CERTIFICATIONS */
+#certifications{background:var(--bg);}
+.cert-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px;}
+.cert{background:var(--panel);border:1px solid var(--border);padding:18px 22px;display:flex;align-items:center;gap:16px;transition:all .3s;position:relative;overflow:hidden;}
+.cert::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,255,136,.04),transparent);opacity:0;transition:opacity .3s;}
+.cert:hover{border-color:rgba(0,255,136,.45);transform:translateX(5px);}
+.cert:hover::before{opacity:1;}
+.cert-num{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);min-width:28px;text-align:right;}
+.cert-dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;box-shadow:0 0 8px rgba(0,255,136,.5);}
+.cert-dot.b{background:var(--cyan);box-shadow:0 0 8px rgba(0,212,255,.5);}
+.cert-dot.o{background:var(--orange);box-shadow:0 0 8px rgba(255,136,0,.5);}
+.cert-info{flex:1;}
+.cert-name{font-weight:600;font-size:14.5px;color:var(--white);margin-bottom:3px;}
+.cert-by{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;}
+
+/* EDUCATION */
+#education{background:var(--bg2);}
+.edu-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+.edu{background:var(--panel);border:1px solid var(--border);padding:40px 36px;position:relative;overflow:hidden;transition:all .3s;}
+.edu::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--green),var(--cyan));}
+.edu:hover{border-color:rgba(0,255,136,.4);transform:translateY(-4px);}
+.edu-deg{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--green);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;}
+.edu-school{font-family:'Orbitron',monospace;font-size:17px;font-weight:700;color:var(--white);margin-bottom:10px;}
+.edu-period{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--muted);letter-spacing:2px;}
+.edu-bg{position:absolute;bottom:-10px;right:20px;font-size:60px;opacity:.05;}
+
+/* CONTACT */
+#contact{background:var(--bg);text-align:center;}
+.contact-inner{max-width:680px;margin:0 auto;}
+.contact-inner p{font-size:16px;line-height:1.8;color:var(--text);margin-top:18px;}
+.contact-row{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-top:52px;}
+.c-link{display:inline-flex;align-items:center;gap:12px;padding:15px 28px;background:var(--panel);border:1px solid var(--border);color:var(--text);text-decoration:none;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1px;transition:all .3s;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%);}
+.c-link svg{width:16px;height:16px;fill:currentColor;flex-shrink:0;}
+.c-link:hover{border-color:var(--green);color:var(--green);background:rgba(0,255,136,.06);transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,255,136,.12);}
+
+/* FOOTER */
+footer{padding:28px 56px;border-top:1px solid var(--border);background:var(--bg2);display:flex;justify-content:space-between;align-items:center;}
+.f-text{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:1px;}
+.f-text em{color:var(--green);font-style:normal;}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(36px);transition:opacity .7s ease,transform .7s ease;}
+.reveal.vis{opacity:1;transform:translateY(0);}
+.reveal:nth-child(2){transition-delay:.1s;}.reveal:nth-child(3){transition-delay:.18s;}.reveal:nth-child(4){transition-delay:.26s;}.reveal:nth-child(5){transition-delay:.34s;}.reveal:nth-child(6){transition-delay:.42s;}
+
+/* RESPONSIVE */
+@media(max-width:1100px){.h-layout{grid-template-columns:1fr;}.terminal{display:none;}}
+@media(max-width:900px){.skills-wrap{grid-template-columns:1fr 1fr;}.about-wrap{grid-template-columns:1fr;}}
+@media(max-width:680px){section{padding:72px 22px;}nav{padding:0 22px;}.nav-links{display:none;}footer{padding:20px 22px;flex-direction:column;gap:10px;text-align:center;}.skills-wrap{grid-template-columns:1fr;}.edu-grid{grid-template-columns:1fr;}.exp-item{grid-template-columns:1fr;gap:10px;}#hero{padding:90px 22px 60px;}}
+
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.35;}
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+<div id="cursor"></div>
+<div id="cursor-dot"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <span class="nl-bracket">[</span>PDR<span style="color:var(--green)">://</span>SEC<span class="nl-bracket">]</span>
+    <div class="nl-dot"></div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#certifications">Certs</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-hire"><div class="hire-dot"></div>Available for Hire</div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="h-grid"></div>
+  <div class="h-radial"></div>
+  <div class="h-diag"></div>
+  <div class="h-layout">
+    <div>
+      <div class="h-badge"><div class="h-badge-dot"></div>Penetration Tester · Ethical Hacker · Instructor</div>
+      <div class="h-name">
+        <span class="h-n1">Prottoy Datta</span>
+        <span class="h-n2 glitch" data-text="Rudro">Rudro</span>
+      </div>
+      <div class="h-sub">whoami: PDR_Rudro</div>
+      <p class="h-desc">Cybersecurity professional who finds vulnerabilities before the adversaries do — and trains the next generation to do the same. Specializing in web application penetration testing, VAPT, and offensive security education.</p>
+      <div class="h-btns">
+        <a href="#contact" class="btn-g">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+          Contact Me
+        </a>
+        <a href="#experience" class="btn-o">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+          View Work
+        </a>
+      </div>
+    </div>
+    <!-- TERMINAL -->
+    <div class="terminal">
+      <div class="t-bar">
+        <div class="td r"></div><div class="td y"></div><div class="td g"></div>
+        <span class="t-title">pdr@kali — bash — 80×24</span>
+      </div>
+      <div class="t-body">
+        <span class="tl"><span class="tp">┌──(pdr㉿kali)</span><span class="ts">-[~]</span></span>
+        <span class="tl"><span class="tp">└─$</span> <span class="tc">cat profile.json</span></span>
+        <span class="tl"><span class="to">{</span></span>
+        <span class="tl"><span class="to">&nbsp;&nbsp;<span class="tk">"name"</span>: <span class="tv">"Prottoy Datta Rudro"</span>,</span></span>
+        <span class="tl"><span class="to">&nbsp;&nbsp;<span class="tk">"role"</span>: <span class="tv">"Penetration Tester"</span>,</span></span>
+        <span class="tl"><span class="to">&nbsp;&nbsp;<span class="tk">"certs"</span>: <span class="tv">13</span>,</span></span>
+        <span class="tl"><span class="to">&nbsp;&nbsp;<span class="tk">"orgs"</span>: <span class="tv">5</span>,</span></span>
+        <span class="tl"><span class="to">&nbsp;&nbsp;<span class="tk">"focus"</span>: <span class="tv">"Web App Security"</span>,</span></span>
+        <span class="tl"><span class="to">&nbsp;&nbsp;<span class="tk">"threat_level"</span>: <span class="tv">"ELITE"</span></span></span>
+        <span class="tl"><span class="to">}</span></span>
+        <span class="tl">&nbsp;</span>
+        <span class="tl"><span class="tp">└─$</span> <span class="tc">nmap -sV --open localhost</span></span>
+        <span class="tl"><span class="to"><span style="color:var(--green)">✓</span> PORT 443  → <span class="tv">SECURED</span></span></span>
+        <span class="tl"><span class="to"><span style="color:var(--green)">✓</span> PORT 80   → <span class="tv">REDIRECTED</span></span></span>
+        <span class="tl"><span class="to"><span style="color:var(--green)">✓</span> Vulns     → <span class="tv">0 FOUND</span></span></span>
+        <span class="tl">&nbsp;</span>
+        <span class="tl"><span class="tp">└─$</span>&nbsp;<span class="blink"></span></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="s-head reveal">
+    <div class="s-tag">01 // Profile</div>
+    <h2 class="s-title">About <em>Me</em></h2>
+  </div>
+  <div class="about-wrap">
+    <div class="about-text reveal">
+      <p>I'm a motivated cybersecurity professional with deep hands-on expertise in web application penetration testing, ethical hacking, and vulnerability assessment. My mission is to discover and neutralize security threats before bad actors can exploit them.</p>
+      <p>Beyond breaking into systems (legally!), I'm deeply passionate about educating the next generation of security professionals — having served as a Cyber Security Instructor and Trainer across multiple international organizations.</p>
+      <p>Currently pursuing a BSc in Computer Science & Engineering while actively consulting, instructing, and hunting bugs across the globe from Dhaka, Bangladesh.</p>
+    </div>
+    <div class="about-stats reveal">
+      <div class="stat"><div class="stat-n">13+</div><div class="stat-l">Certifications</div></div>
+      <div class="stat"><div class="stat-n">5+</div><div class="stat-l">Organizations</div></div>
+      <div class="stat"><div class="stat-n">VAPT</div><div class="stat-l">Core Expertise</div></div>
+      <div class="stat"><div class="stat-n">BD</div><div class="stat-l">Based In</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="s-head reveal">
+    <div class="s-tag">02 // Arsenal</div>
+    <h2 class="s-title">Technical <em>Skills</em></h2>
+  </div>
+  <div class="skills-wrap">
+    <div class="sk reveal"><div class="sk-num">01</div><div class="sk-name">Web App Pentesting</div><div class="sk-desc">Identifying and exploiting vulnerabilities in web applications using industry-standard offensive methodologies.</div><div class="tags"><span class="tag">Burp Suite</span><span class="tag">OWASP ZAP</span><span class="tag">Metasploit</span><span class="tag">Nmap</span></div></div>
+    <div class="sk reveal"><div class="sk-num">02</div><div class="sk-name">Ethical Hacking</div><div class="sk-desc">Bug bounty hunting and ethical hacking using structured attack methodologies to uncover real-world vulnerabilities.</div><div class="tags"><span class="tag">Bug Bounty</span><span class="tag">Red Teaming</span><span class="tag">Exploit Dev</span></div></div>
+    <div class="sk reveal"><div class="sk-num">03</div><div class="sk-name">VAPT &amp; Recon</div><div class="sk-desc">Comprehensive vulnerability assessments and penetration testing with advanced OSINT and reconnaissance techniques.</div><div class="tags"><span class="tag">VAPT</span><span class="tag">OSINT</span><span class="tag">Recon</span></div></div>
+    <div class="sk reveal"><div class="sk-num">04</div><div class="sk-name">Network Security</div><div class="sk-desc">Network vulnerability scanning, traffic analysis, and security architecture review for enterprise environments.</div><div class="tags"><span class="tag">Scanning</span><span class="tag">CCNA</span><span class="tag">Analysis</span></div></div>
+    <div class="sk reveal"><div class="sk-num">05</div><div class="sk-name">Security Training</div><div class="sk-desc">Designing and delivering cybersecurity training programs, workshops, and awareness campaigns for organizations.</div><div class="tags"><span class="tag">Instruction</span><span class="tag">Consulting</span><span class="tag">Curriculum Dev</span></div></div>
+    <div class="sk reveal"><div class="sk-num">06</div><div class="sk-name">Reporting &amp; Comms</div><div class="sk-desc">Professional security report writing, risk documentation, and client-facing communication of technical findings.</div><div class="tags"><span class="tag">Report Writing</span><span class="tag">Documentation</span><span class="tag">Client Comms</span></div></div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="s-head reveal">
+    <div class="s-tag">03 // Operations</div>
+    <h2 class="s-title">Work <em>Experience</em></h2>
+  </div>
+  <div class="exp-wrap">
+
+    <!-- 1 · TENSOR (TOP) -->
+    <div class="exp-item reveal">
+      <div class="exp-left">
+        <div class="exp-co">Tensor Security Academy</div>
+        <div class="exp-loc">Remote — USA</div>
+        <span class="exp-badge hi">Full Role</span>
+      </div>
+      <div class="exp-right">
+        <div class="exp-role">Cyber Security Instructor &amp; Security Consultant</div>
+        <p class="exp-desc">Lead cybersecurity training programs and deliver hands-on education for students at a US-based security academy. Simultaneously provide security consulting services — helping clients assess vulnerabilities, harden their systems, and build resilient security strategies.</p>
+        <div class="exp-hl-row">
+          <span class="exp-hl">Security Training</span>
+          <span class="exp-hl">Consulting</span>
+          <span class="exp-hl">Curriculum Design</span>
+          <span class="exp-hl">Remote · USA</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 · BETOPIA (TOP) -->
+    <div class="exp-item reveal">
+      <div class="exp-left">
+        <div class="exp-co">Betopia Group</div>
+        <div class="exp-loc">On-Site · Bangladesh</div>
+        <span class="exp-badge hi">On-Site</span>
+      </div>
+      <div class="exp-right">
+        <div class="exp-role">Cyber Security Intern</div>
+        <p class="exp-desc">Performed on-site security assessments and worked alongside the internal security team to identify threats and vulnerabilities within the organization's infrastructure. Gained hands-on experience operating in a real enterprise security environment.</p>
+        <div class="exp-hl-row">
+          <span class="exp-hl">Infrastructure Security</span>
+          <span class="exp-hl">Threat Analysis</span>
+          <span class="exp-hl">On-Site</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 · EXPLOIT X -->
+    <div class="exp-item reveal">
+      <div class="exp-left">
+        <div class="exp-co">Exploit X Labs</div>
+        <div class="exp-loc">Remote · Part-time</div>
+        <span class="exp-badge">Part-Time</span>
+      </div>
+      <div class="exp-right">
+        <div class="exp-role">Cyber Security Consultant &amp; Trainer</div>
+        <p class="exp-desc">Provided part-time security consulting and hands-on training in offensive security techniques. Supported clients in understanding vulnerability landscapes and improving their defensive capabilities against modern threats.</p>
+        <div class="exp-hl-row">
+          <span class="exp-hl">Offensive Security</span>
+          <span class="exp-hl">Training</span>
+          <span class="exp-hl">Consulting</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 · STRATEGIC PLANNING -->
+    <div class="exp-item reveal">
+      <div class="exp-left">
+        <div class="exp-co">Strategic Planning House LLC</div>
+        <div class="exp-loc">Remote · Project-based</div>
+        <span class="exp-badge">Project-Based</span>
+      </div>
+      <div class="exp-right">
+        <div class="exp-role">Cyber Security Consultant</div>
+        <p class="exp-desc">Engaged on a project basis to deliver cybersecurity advisory, risk assessments, and security strategy recommendations to the organization's leadership and stakeholders.</p>
+        <div class="exp-hl-row">
+          <span class="exp-hl">Risk Assessment</span>
+          <span class="exp-hl">Advisory</span>
+          <span class="exp-hl">Security Strategy</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 · ARENA -->
+    <div class="exp-item reveal">
+      <div class="exp-left">
+        <div class="exp-co">Arena Web Security</div>
+        <div class="exp-loc">Remote</div>
+        <span class="exp-badge">Internship</span>
+      </div>
+      <div class="exp-right">
+        <div class="exp-role">Cyber Security Intern</div>
+        <p class="exp-desc">Gained practical experience in web security assessments and vulnerability research. Earned a Certificate of Achievement recognizing strong performance and contribution to real security projects during the internship period.</p>
+        <div class="exp-hl-row">
+          <span class="exp-hl">Web Security</span>
+          <span class="exp-hl">Vuln Research</span>
+          <span class="exp-hl">Certificate of Achievement</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CERTIFICATIONS -->
+<section id="certifications">
+  <div class="s-head reveal">
+    <div class="s-tag">04 // Credentials</div>
+    <h2 class="s-title">Certifications &amp; <em>Training</em></h2>
+  </div>
+  <div class="cert-grid">
+    <div class="cert reveal"><span class="cert-num">01</span><div class="cert-dot"></div><div class="cert-info"><div class="cert-name">Certified Red Team Analyst (CRTA)</div><div class="cert-by">Cyber Warfare Labs</div></div></div>
+    <div class="cert reveal"><span class="cert-num">02</span><div class="cert-dot"></div><div class="cert-info"><div class="cert-name">Certified Cybersecurity Educator Professional (CCEP)</div><div class="cert-by">Red Team Leaders</div></div></div>
+    <div class="cert reveal"><span class="cert-num">03</span><div class="cert-dot"></div><div class="cert-info"><div class="cert-name">Certified Cyber Security Analyst (C3SA)</div><div class="cert-by">Cyber Warfare Labs</div></div></div>
+    <div class="cert reveal"><span class="cert-num">04</span><div class="cert-dot b"></div><div class="cert-info"><div class="cert-name">Certified Network Security Practitioner (CNSP)</div><div class="cert-by">The SecOps Group</div></div></div>
+    <div class="cert reveal"><span class="cert-num">05</span><div class="cert-dot b"></div><div class="cert-info"><div class="cert-name">Certified Phishing Prevention Specialist (CPPS)</div><div class="cert-by">Hack &amp; Fix</div></div></div>
+    <div class="cert reveal"><span class="cert-num">06</span><div class="cert-dot b"></div><div class="cert-info"><div class="cert-name">Cybersecurity Career Starter Certification (CCSC)</div><div class="cert-by">Hack &amp; Fix</div></div></div>
+    <div class="cert reveal"><span class="cert-num">07</span><div class="cert-dot"></div><div class="cert-info"><div class="cert-name">Introduction to Dark Web Operations</div><div class="cert-by">Security Blue Team</div></div></div>
+    <div class="cert reveal"><span class="cert-num">08</span><div class="cert-dot"></div><div class="cert-info"><div class="cert-name">Offensive Agent AI Course</div><div class="cert-by">Red Team Leaders</div></div></div>
+    <div class="cert reveal"><span class="cert-num">09</span><div class="cert-dot"></div><div class="cert-info"><div class="cert-name">Cyber Security Architecture v1</div><div class="cert-by">Red Team Leaders</div></div></div>
+    <div class="cert reveal"><span class="cert-num">10</span><div class="cert-dot b"></div><div class="cert-info"><div class="cert-name">Linux 100: Fundamentals</div><div class="cert-by">TCM Security</div></div></div>
+    <div class="cert reveal"><span class="cert-num">11</span><div class="cert-dot o"></div><div class="cert-info"><div class="cert-name">Certificate of Achievement</div><div class="cert-by">Arena Web Security</div></div></div>
+    <div class="cert reveal"><span class="cert-num">12</span><div class="cert-dot o"></div><div class="cert-info"><div class="cert-name">Knight CTF — Certificate of Participation</div><div class="cert-by">Capture The Flag Event</div></div></div>
+    <div class="cert reveal"><span class="cert-num">13</span><div class="cert-dot b"></div><div class="cert-info"><div class="cert-name">CCNA Routing &amp; Switching</div><div class="cert-by">BrightSkills</div></div></div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="s-head reveal">
+    <div class="s-tag">05 // Background</div>
+    <h2 class="s-title"><em>Education</em></h2>
+  </div>
+  <div class="edu-grid">
+    <div class="edu reveal">
+      <div class="edu-deg">BSc in Computer Science &amp; Engineering</div>
+      <div class="edu-school">Uttara University</div>
+      <div class="edu-period">2026 — Ongoing</div>
+      <div class="edu-bg">🎓</div>
+    </div>
+    <div class="edu reveal">
+      <div class="edu-deg">Diploma in Computer Science &amp; Engineering</div>
+      <div class="edu-school">Rumdo Institute of Modern Technology</div>
+      <div class="edu-period">2022 — 2025</div>
+      <div class="edu-bg">📡</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-inner">
+    <div class="s-head reveal" style="text-align:center;">
+      <div class="s-tag" style="justify-content:center;">06 // Connect</div>
+      <h2 class="s-title">Get In <em>Touch</em></h2>
+    </div>
+    <p class="reveal">Looking to secure your systems, run a penetration test, or train your security team? I'm ready to help. Let's connect.</p>
+    <div class="contact-row reveal">
+      <a href="mailto:pdrrudro@gmail.com" class="c-link">
+        <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        pdrrudro@gmail.com
+      </a>
+      <a href="tel:+8801735198755" class="c-link">
+        <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+        +880 1735 198755
+      </a>
+      <a href="https://linkedin.com/in/prottoyrudro" target="_blank" class="c-link">
+        <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        LinkedIn
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="f-text">© 2025 <em>Prottoy Datta Rudro</em> — All rights reserved</div>
+  <div class="f-text">Built with a <em>security-first</em> mindset</div>
+</footer>
+
+<script>
+/* CUSTOM CURSOR */
+const cur=document.getElementById('cursor'),dot=document.getElementById('cursor-dot');
+let mx=0,my=0,cx=0,cy=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+(function anim(){cx+=(mx-cx)*.15;cy+=(my-cy)*.15;cur.style.left=cx+'px';cur.style.top=cy+'px';requestAnimationFrame(anim);})();
+document.querySelectorAll('a,button,.sk,.cert,.stat,.edu').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.transform='translate(-50%,-50%) scale(2.2)';cur.style.borderColor='var(--cyan)';});
+  el.addEventListener('mouseleave',()=>{cur.style.transform='translate(-50%,-50%) scale(1)';cur.style.borderColor='var(--green)';});
+});
+
+/* PARTICLE NETWORK */
+const canvas=document.getElementById('bg-canvas'),ctx=canvas.getContext('2d');
+let W,H,P=[];
+function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
+resize();window.addEventListener('resize',resize);
+class Pt{constructor(){this.r();}r(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-.5)*.4;this.vy=(Math.random()-.5)*.4;this.sz=Math.random()*1.5+.5;this.life=0;this.ml=200+Math.random()*200;this.col=Math.random()>.5?'0,255,136':'0,212,255';}u(){this.x+=this.vx;this.y+=this.vy;this.life++;if(this.life>this.ml)this.r();}d(){const a=Math.sin(this.life/this.ml*Math.PI)*.6;ctx.beginPath();ctx.arc(this.x,this.y,this.sz,0,Math.PI*2);ctx.fillStyle=`rgba(${this.col},${a})`;ctx.fill();}}
+for(let i=0;i<90;i++)P.push(new Pt());
+function loop(){
+  ctx.clearRect(0,0,W,H);
+  P.forEach(p=>{p.u();p.d();});
+  for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){
+    const dx=P[i].x-P[j].x,dy=P[i].y-P[j].y,d=Math.sqrt(dx*dx+dy*dy);
+    if(d<130){ctx.beginPath();ctx.moveTo(P[i].x,P[i].y);ctx.lineTo(P[j].x,P[j].y);ctx.strokeStyle=`rgba(0,255,136,${(1-d/130)*.09})`;ctx.lineWidth=.5;ctx.stroke();}
+  }
+  requestAnimationFrame(loop);
+}
+loop();
+
+/* SCROLL REVEAL */
+const revs=document.querySelectorAll('.reveal');
+new IntersectionObserver(e=>{e.forEach(en=>{if(en.isIntersecting)en.target.classList.add('vis');});},{threshold:.08}).observe
+? new IntersectionObserver(e=>{e.forEach(en=>{if(en.isIntersecting)en.target.classList.add('vis');});},{threshold:.08}).observe
+: null;
+const io=new IntersectionObserver(e=>{e.forEach(en=>{if(en.isIntersecting)en.target.classList.add('vis');});},{threshold:.08});
+revs.forEach(el=>io.observe(el));
+
+/* ACTIVE NAV */
+const secs=document.querySelectorAll('section[id]'),nls=document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll',()=>{
+  let c='';secs.forEach(s=>{if(window.scrollY>=s.offsetTop-100)c=s.id;});
+  nls.forEach(a=>{a.style.color=a.getAttribute('href')==='#'+c?'var(--green)':'';});
+});
+</script>
+</body>
+</html>
