@@ -23,13 +23,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;600;700;900&display=swap">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;600;700;900&display=block">
 
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;600;700;900&display=swap" media="print" onload="this.media='all'">
-
-<noscript>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;600;700;900&display=swap">
-</noscript>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;600;700;900&display=block">
 <style>
 :root{
   --bg:#03080c;--bg2:#060d13;--panel:#081018;
@@ -521,7 +517,7 @@ document.querySelectorAll('a,button,.sk,.cert,.stat,.edu').forEach(el=>{
   el.addEventListener('mouseleave',()=>{cur.style.transform='translate(-50%,-50%) scale(1)';cur.style.borderColor='var(--green)';});
 });
 
-/* SCROLL REVEAL (Cleaned up redundant lines) */
+/* SCROLL REVEAL */
 const revs=document.querySelectorAll('.reveal');
 const io=new IntersectionObserver(e=>{e.forEach(en=>{if(en.isIntersecting)en.target.classList.add('vis');});},{threshold:.08});
 revs.forEach(el=>io.observe(el));
@@ -535,35 +531,38 @@ window.addEventListener('scroll',()=>{
 
 
 /* =========================================
-   2. DELAY HEAVY MATH (Boosts Lighthouse Score)
+   2. DELAY HEAVY MATH (Squash the 250ms TBT)
    ========================================= */
 
 /* PARTICLE NETWORK */
 window.addEventListener('load', function() {
-  const canvas=document.getElementById('bg-canvas'),ctx=canvas.getContext('2d');
-  let W,H,P=[];
-  function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
-  resize();window.addEventListener('resize',resize);
-  
-  class Pt{
-    constructor(){this.r();}
-    r(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-.5)*.4;this.vy=(Math.random()-.5)*.4;this.sz=Math.random()*1.5+.5;this.life=0;this.ml=200+Math.random()*200;this.col=Math.random()>.5?'0,255,136':'0,212,255';}
-    u(){this.x+=this.vx;this.y+=this.vy;this.life++;if(this.life>this.ml)this.r();}
-    d(){const a=Math.sin(this.life/this.ml*Math.PI)*.6;ctx.beginPath();ctx.arc(this.x,this.y,this.sz,0,Math.PI*2);ctx.fillStyle=`rgba(${this.col},${a})`;ctx.fill();}
-  }
-  
-  for(let i=0;i<40;i++)P.push(new Pt()); // Optimized to 40 particles
-  
-  function loop(){
-    ctx.clearRect(0,0,W,H);
-    P.forEach(p=>{p.u();p.d();});
-    for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){
-      const dx=P[i].x-P[j].x,dy=P[i].y-P[j].y,d=Math.sqrt(dx*dx+dy*dy);
-      if(d<130){ctx.beginPath();ctx.moveTo(P[i].x,P[i].y);ctx.lineTo(P[j].x,P[j].y);ctx.strokeStyle=`rgba(0,255,136,${(1-d/130)*.09})`;ctx.lineWidth=.5;ctx.stroke();}
+  // Give the browser a 500ms breathing room before starting the heavy math
+  setTimeout(function() {
+    const canvas=document.getElementById('bg-canvas'),ctx=canvas.getContext('2d');
+    let W,H,P=[];
+    function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
+    resize();window.addEventListener('resize',resize);
+    
+    class Pt{
+      constructor(){this.r();}
+      r(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-.5)*.4;this.vy=(Math.random()-.5)*.4;this.sz=Math.random()*1.5+.5;this.life=0;this.ml=200+Math.random()*200;this.col=Math.random()>.5?'0,255,136':'0,212,255';}
+      u(){this.x+=this.vx;this.y+=this.vy;this.life++;if(this.life>this.ml)this.r();}
+      d(){const a=Math.sin(this.life/this.ml*Math.PI)*.6;ctx.beginPath();ctx.arc(this.x,this.y,this.sz,0,Math.PI*2);ctx.fillStyle=`rgba(${this.col},${a})`;ctx.fill();}
     }
-    requestAnimationFrame(loop);
-  }
-  loop();
+    
+    for(let i=0;i<40;i++)P.push(new Pt());
+    
+    function loop(){
+      ctx.clearRect(0,0,W,H);
+      P.forEach(p=>{p.u();p.d();});
+      for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){
+        const dx=P[i].x-P[j].x,dy=P[i].y-P[j].y,d=Math.sqrt(dx*dx+dy*dy);
+        if(d<130){ctx.beginPath();ctx.moveTo(P[i].x,P[i].y);ctx.lineTo(P[j].x,P[j].y);ctx.strokeStyle=`rgba(0,255,136,${(1-d/130)*.09})`;ctx.lineWidth=.5;ctx.stroke();}
+      }
+      requestAnimationFrame(loop);
+    }
+    loop();
+  }, 500); // 500 millisecond delay
 });
 </script>
 </body>
